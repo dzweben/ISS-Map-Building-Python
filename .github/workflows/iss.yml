@@ -4,9 +4,11 @@ permissions:
   contents: write
 
 on:
+  push:
+    branches: [ main ]
   schedule:
-    - cron: "0 * * * *"   # every hour UTC
-  workflow_dispatch: {}
+    - cron: "0 * * * *"
+  workflow_dispatch:
 
 jobs:
   update-iss-map:
@@ -27,16 +29,16 @@ jobs:
     - name: "Randomized delay (0-50 min)"
       run: sleep $((RANDOM % 3000))
 
-    - name: "Gate - decide whether to run (aim 5-20 commits/day)"
+    - name: "Gatekeeper"
       id: gate
       run: python gatekeeper.py
 
     - name: "Run mapbuilder (updates CSV + HTML)"
-      if: steps.gate.outputs.run == 'true'
+      if: ${{ steps.gate.outputs.run == 'true' }}
       run: python mapbuilder.py
 
     - name: "Commit & push changes"
-      if: steps.gate.outputs.run == 'true'
+      if: ${{ steps.gate.outputs.run == 'true' }}
       run: |
         git config user.name "dzweben"
         git config user.email "danny.zweben99@gmail.com"
