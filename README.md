@@ -29,6 +29,8 @@ iss_map.html         # Interactive globe visualization
 
 ## ⚙️ Workflow (`.github/workflows/iss.yml`)
 
+![YML](images/yml.png)
+
 ```yaml
 name: ISS Map Auto-Updater
 
