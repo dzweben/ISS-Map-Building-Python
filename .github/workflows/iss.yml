@@ -29,25 +29,7 @@ jobs:
 
     - name: Gate: decide whether to run (aim 5–20 commits/day)
       id: gate
-      run: |
-        today=$(date -u +%Y-%m-%d)
-        count=$(grep -c "^$today" iss_positions.csv 2>/dev/null || echo 0)
-        # deterministic daily target between 5 and 20
-        target=$(( ( $(date -d $today +%s) % 16 ) + 5 ))
-        remaining_hours=$((24 - $(date -u +%H)))
-
-        if [ "$count" -ge "$target" ]; then
-          decision=false
-        else
-          remaining_needed=$((target - count))
-          # ensure probability increases as day goes on
-          prob=$(echo "scale=2; $remaining_needed / $remaining_hours" | bc -l)
-          [ $(echo "$prob < 0.15" | bc -l) -eq 1 ] && prob=0.15
-          roll=$(awk -v seed=$(date +%s%N) 'BEGIN{srand(seed); print rand()}')
-          decision=$(awk -v r=$roll -v p=$prob 'BEGIN{print (r<p)?"true":"false"}')
-        fi
-
-        echo "run=$decision" >> $GITHUB_OUTPUT
+      run: python gatekeeper.py
 
     - name: Run mapbuilder (updates CSV + HTML)
       if: steps.gate.outputs.run == 'true'
