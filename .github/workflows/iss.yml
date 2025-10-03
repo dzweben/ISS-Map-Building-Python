@@ -13,29 +13,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: "Checkout repo"
       uses: actions/checkout@v4
 
-    - name: Set up Python
+    - name: "Set up Python"
       uses: actions/setup-python@v5
       with:
         python-version: "3.11"
 
-    - name: Install dependencies
+    - name: "Install dependencies"
       run: pip install plotly requests pandas
 
-    - name: Randomized delay (0–50 min)
+    - name: "Randomized delay (0-50 min)"
       run: sleep $((RANDOM % 3000))
 
-    - name: Gate: decide whether to run (aim 5–20 commits/day)
+    - name: "Gate - decide whether to run (aim 5-20 commits/day)"
       id: gate
       run: python gatekeeper.py
 
-    - name: Run mapbuilder (updates CSV + HTML)
+    - name: "Run mapbuilder (updates CSV + HTML)"
       if: steps.gate.outputs.run == 'true'
       run: python mapbuilder.py
 
-    - name: Commit & push changes
+    - name: "Commit & push changes"
       if: steps.gate.outputs.run == 'true'
       run: |
         git config user.name "dzweben"
