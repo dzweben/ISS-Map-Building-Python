@@ -33,7 +33,7 @@ jobs:
     - name: Gate: decide whether to run (aim 5–20 commits/day)
       id: gate
       run: |
-        python - << 'PY'
+        python - <<'PY'
         import os, random
         from datetime import datetime, timezone
         import pandas as pd
@@ -41,11 +41,11 @@ jobs:
         now = datetime.now(timezone.utc)
         today = now.strftime('%Y-%m-%d')
 
-        # Deterministic daily target between 5 and 20 (no saved state needed)
+        # Deterministic daily target between 5 and 20
         random.seed(today)
         target = random.randint(5, 20)
 
-        # Count how many points already logged today (by date prefix in ts)
+        # Count how many points already logged today
         count = 0
         try:
             df = pd.read_csv('iss_positions.csv')
@@ -54,7 +54,6 @@ jobs:
         except Exception:
             pass
 
-        # Hours left including this one
         remaining_hours = 24 - now.hour
 
         if count >= target:
@@ -62,7 +61,7 @@ jobs:
             reason = f"already reached target {target} (count={count})"
         else:
             remaining_needed = max(0, target - count)
-            # Probability increases as the day runs out so we tend to hit target
+            # Probability increases as the day runs out
             p = min(1.0, max(0.15, remaining_needed / max(1, remaining_hours)))
             decision = random.random() < p
             reason = f"count={count}, target={target}, remaining_hours={remaining_hours}, p={p:.2f}"
@@ -79,7 +78,7 @@ jobs:
     - name: Commit & push changes
       if: steps.gate.outputs.run == 'true'
       run: |
-        git config username "dzweben"
+        git config user.name "dzweben"
         git config user.email "danny.zweben99@gmail.com"
         git add iss_map.html iss_positions.csv
         git commit -m "auto: update ISS map $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
