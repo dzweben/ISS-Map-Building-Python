@@ -1,15 +1,12 @@
-# Personal Map Project
-# 🚀 ISS Map Auto-Updater
+# Personal Map Project  
+# 🚀 ISS Map Auto-Updater  
 
 This project automatically fetches the **International Space Station’s live position** several times a day, plots it on an interactive globe (`iss_map.html`), and commits updates back to this repo.  
 It uses **GitHub Actions** so it runs in the cloud — no laptop/server needed.  
 
-    This is Purely for **FUNNNNN** ¯\_(ツ)_/¯  ¯\_(ツ)_/¯  ¯\_(ツ)_/¯ 
-
+This is purely for **FUNNNNN** ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯  
 
 ![Planet](images/SpaceStation.png)
-
-
 
 ---
 
@@ -19,7 +16,7 @@ It uses **GitHub Actions** so it runs in the cloud — no laptop/server needed.
 .github/
   workflows/
     iss.yml          # GitHub Actions workflow (runs hourly, 5–20 commits/day)
-gatekeeper.py        # Decides whether to run this hour
+    gatekeeper.py    # Decides whether to run this hour
 mapbuilder.py        # Fetches ISS location, updates CSV + map
 iss_positions.csv    # Log of ISS positions over time
 iss_map.html         # Interactive globe visualization
@@ -61,11 +58,14 @@ jobs:
       run: pip install plotly requests pandas
 
     - name: "Randomized delay (0-50 min)"
-      run: sleep $((RANDOM % 3000))
+      run: |
+        DELAY=$((RANDOM % 3000))
+        echo "Sleeping for $DELAY seconds (~$((DELAY/60)) minutes)"
+        sleep $DELAY
 
     - name: "Gatekeeper"
       id: gate
-      run: python gatekeeper.py
+      run: python .github/workflows/gatekeeper.py
 
     - name: "Run mapbuilder (updates CSV + HTML)"
       if: ${{ steps.gate.outputs.run == 'true' }}
@@ -83,7 +83,7 @@ jobs:
 
 ---
 
-## 🧠 Gatekeeper (`gatekeeper.py`)
+## 🧠 Gatekeeper (`.github/workflows/gatekeeper.py`)
 
 ```python
 import os, random

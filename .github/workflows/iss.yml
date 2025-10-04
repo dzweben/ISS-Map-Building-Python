@@ -26,12 +26,15 @@ jobs:
     - name: "Install dependencies"
       run: pip install plotly requests pandas
 
-    - name: "Randomized delay (0-50 min)"
-      run: sleep $((RANDOM % 3000))
+    - name: "Randomized delay (0–50 min)"
+      run: |
+        DELAY=$((RANDOM % 3000))
+        echo "Sleeping for $DELAY seconds (~$((DELAY/60)) minutes)"
+        sleep $DELAY
 
     - name: "Gatekeeper"
       id: gate
-      run: python gatekeeper.py
+      run: python .github/workflows/gatekeeper.py
 
     - name: "Run mapbuilder (updates CSV + HTML)"
       if: ${{ steps.gate.outputs.run == 'true' }}
