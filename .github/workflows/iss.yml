@@ -46,5 +46,5 @@ jobs:
         git config user.name "dzweben"
         git config user.email "danny.zweben99@gmail.com"
         git add iss_map.html iss_positions.csv
-        git commit -m "auto: update ISS map $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
+        git commit -m "auto: Update ISS map $(date -u +'%Y-%m-%d %H:%M:%S UTC')" || echo "No changes to commit"
         git push
